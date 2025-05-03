@@ -1,0 +1,11 @@
+#compdef _stfu stfu
+
+_stfu() {
+  # Since we take a command as an argument, we need to
+  # shift the _normal completion function to the next word.
+  shift words
+  (( CURRENT-=1 ))
+  _normal
+}
+
+# mode: Shell-Script
