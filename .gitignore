@@ -1,0 +1,6 @@
+# compiled output
+stfu
+a.out
+*.o
+# clangd
+.cache/
