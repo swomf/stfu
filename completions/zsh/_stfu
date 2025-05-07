@@ -1,11 +1,21 @@
-#compdef _stfu stfu
+#compdef stfu 
 
-_stfu() {
-  # Since we take a command as an argument, we need to
-  # shift the _normal completion function to the next word.
-  shift words
-  (( CURRENT-=1 ))
-  _normal
-}
+# based on completions for doas/sudo
 
-# mode: Shell-Script
+local environ e cmd cpp
+local -a _comp_priv_prefix
+local -A opt_args
+
+zstyle -a ":completion:${curcontext}:" environ environ
+
+for e in "${environ[@]}"
+do local -x "$e"
+done
+
+cmd="$words[1]"
+cpp='_comp_priv_prefix=( $cmd -n ${(kv)opt_args[(I)-u]} )'
+_arguments -s -S -A '-*' : \
+  '(-h --help)'{-h,--help}'[display help page and exit]' \
+  '(-s --shell)'{-s,--shell}'[copy user login shell to run command non-directly]'\
+  "(-)1: :{ $cpp; _command_names -e }" \
+  "*:: :{ $cpp; _normal }"
