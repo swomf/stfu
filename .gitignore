@@ -4,3 +4,5 @@ a.out
 *.o
 # clangd
 .cache/
+# but not completions (undo broad stfu rule)
+!completions/bash/stfu
