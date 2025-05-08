@@ -31,6 +31,6 @@ uninstall:
 	$(RM) $(DESTDIR)$(PREFIX)/share/man/man1/$(PROG).1
 
 clean:
-	$(RM) $(PROG)
+	$(RM) src/$(PROG)
 
 .PHONY: install uninstall clean
