@@ -1,0 +1,52 @@
+.TH STFU 1 "2024" "" "stfu"
+.SH NAME
+stfu \- Call commands and programs from the terminal without clogging
+stdout/stderr
+
+.SH SYNOPSIS
+.B stfu
+.I [option] <command> [args...]
+
+.SH DESCRIPTION
+The
+.B stfu
+command allows users to execute commands from the terminal without cluttering
+the standard output (stdout) and standard error (stderr). It is equivalent to
+the following sequence in BASH:
+
+.RS
+.nf
+somecommand
+^Z           (ctrl+z)
+bg
+disown
+.nf
+.RE
+
+.SH OPTIONS
+.TP
+.B -h, --help
+Print this help message and exit.
+
+.TP
+.B -s, --shell
+Run the command using the user's shell, rather than executing it directly.
+
+.SH EXAMPLES
+Run and detach a command:
+.B stfu firefox --private-window example.com
+
+Run and detach a command in the current shell context (bash, fish, zsh):
+.B stfu -s my_script.sh
+
+Expounding on above, run and detach an alias (bash, fish, zsh):
+.B stfu -s ll
+
+.SH AUTHOR
+stfu was written by swomf <swomf@proton.me>.
+
+.SH BUGS
+Report any bugs to https://github.com/swomf/stfu/issues.
+
+.SH COPYRIGHT
+2024, swomf. GPLv3
