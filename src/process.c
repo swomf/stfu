@@ -51,7 +51,7 @@ int get_process_comm_from_pid(pid_t pid, char *buffer, size_t size) {
 
 int get_process_realpath(pid_t pid, char *buffer) {
   char path[PROC_PATH_SIZE];
-  snprintf(path, sizeof(path), "/proc/%d/comm", pid);
+  snprintf(path, sizeof(path), "/proc/%d/exe", pid);
   if (realpath(path, buffer) == NULL)
     return 1;
   return 0;

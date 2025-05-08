@@ -77,9 +77,10 @@ static inline void usage() {
 }
 
 int main(int argc, char **argv) {
-  char shell[256] = {0}, stfu_realpath[256] = {0};
+  // PROC_PATH_SIZE < 128 - 2 so strcpy is safe for shellscript_realpath
+  char shell[256] = {0}, shellscript_realpath[128] = {0};
   u_int8_t want_run_in_shell = 0;
-  char *shellscript = NULL;
+  long last_slash_pos;
 
 #ifdef MAKE_FORK_FAIL_TEST
   seccomp_block_fork();
@@ -101,26 +102,28 @@ int main(int argc, char **argv) {
     pid_t pid = -1, ppid = -1;
 
     if (get_pids(&pid, &ppid) != 0) {
-      fprintf(stderr, "couldn't get parent pid of stfu\n");
+      fprintf(stderr, "couldn't get pid and ppid of caller shell\n");
       return 1;
     }
 
     if (get_process_comm_from_pid(ppid, shell, sizeof(shell)) != 0) {
-      fprintf(stderr, "couldn't get parent process name\n");
+      fprintf(stderr, "couldn't get comm (filename) of caller shell\n");
       return 1;
     }
 
-    if (get_process_realpath(pid, stfu_realpath) != 0) {
-      fprintf(stderr, "couldn't get parent pid of stfu\n");
+    if (get_process_realpath(pid, shellscript_realpath) != 0) {
+      fprintf(stderr, "couldn't get realpath of stfu\n");
       return 1;
     }
 
+    // slash existence is guaranteed, no need to null check
+    last_slash_pos = strrchr(shellscript_realpath, '/') - shellscript_realpath;
     if (strcmp(shell, "fish") == 0) {
       // fish uses $argv instead of $@, see stfu.*sh
-      shellscript = "stfu.fish";
+      strcpy(shellscript_realpath + last_slash_pos + 1, "stfu.fish");
     } else {
       // assume typical posix shell e.g. sh zsh bash
-      shellscript = "stfu.sh";
+      strcpy(shellscript_realpath + last_slash_pos + 1, "stfu.sh");
     }
   }
 
@@ -137,8 +140,7 @@ int main(int argc, char **argv) {
     freopen("/dev/null", "w", stderr);
 #endif
     if (want_run_in_shell) {
-      // mutes shellname
-      run_in_shell(argc, argv, shell, shellscript);
+      run_in_shell(argc, argv, shell, shellscript_realpath);
     } else {
       execvp(argv[1], &argv[1]);
     }
