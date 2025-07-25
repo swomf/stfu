@@ -4,9 +4,9 @@ PROG := stfu
 ZSH_COMPLETION_DIR ?= $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 BASH_COMPLETION_DIR ?= $(DESTDIR)$(PREFIX)/share/bash-completion/completions
 
-src/stfu: src/stfu.c src/process.c
+src/$(PROG): src/$(PROG).c src/process.c
 
-install:
+install: src/$(PROG)
 	@# symlink binary
 	install -Dm755 src/$(PROG) $(DESTDIR)$(PREFIX)/share/$(PROG)/$(PROG)
 	ln -rsf $(DESTDIR)$(PREFIX)/share/$(PROG)/$(PROG) $(DESTDIR)$(PREFIX)/bin/$(PROG)
